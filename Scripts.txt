@@ -1,0 +1,90 @@
+----------------------CREATE Command---------------------------
+
+CREATE TABLE Prod
+(
+Product_Id NUMBER(5) CONSTRAINT Prod_ProductId_pk PRIMARY KEY,
+Product_Name VARCHAR2(20) CONSTRAINT Prod_ProductName_nn UNIQUE NOT NULL,
+Product_Type VARCHAR2(12),
+Product_Cost NUMBER(8) CONSTRAINT Prod_ProductCost_nn NOT NULL ,
+Product_Details  VARCHAR2(50)
+);
+
+CREATE TABLE Consumers
+(
+Consumer_Id NUMBER(5) CONSTRAINT Consumers_ConsumerId_pk PRIMARY KEY,
+Consumer_Name  VARCHAR2(20) CONSTRAINT Consumers_ConsumerName_nn NOT NULL,	
+Consumer_Email VARCHAR2(30)  CONSTRAINT Consumers_ConsumerEmail_nn UNIQUE NOT NULL , 
+Consumer_Phone NUMBER(10) CONSTRAINT Consumers_Consumerphone_nn UNIQUE NOT NULL  ,
+Consumer_Address VARCHAR2(50) CONSTRAINT Consumers_ConsumerAddress_nn NOT NULL,
+Consumer_Cardtype VARCHAR2(8),
+Active_user VARCHAR2(5) DEFAULT ‘No’,
+Eligibility VARCHAR(5) DEFAULT ‘No’,	
+Consumer_Salary NUMBER(7) CONSTRAINT Consumers_ConsumerSalary_nn NOT NULL,
+Consumer_Bankname VARCHAR2(10) CONSTRAINT Consumers_ConsumerBank_nn NOT NULL,
+Consumer_IFSC	 VARCHAR2(15) CONSTRAINT Consumers_Consumerifsc_nn NOT NULL,
+consumer_account_number NUMBER(16) CONSTRAINT Consumers_ConsumerAccountNo_u UNIQUE NOT NULL
+);
+
+CREATE TABLE Logins
+(
+ Consumer_username VARCHAR2(30) CONSTRAINT Logins_ConsumerUsername_pk PRIMARY KEY ,
+Consumer_password VARCHAR2(15) CONSTRAINT Logins_ConsumerPassword_nn NOT NULL,
+Consumer_Id NUMBER(5) CONSTRAINT Logins_ConsumerId_fk REFERENCES Consumers(Consumer_Id)
+on delete cascade
+);
+
+
+
+CREATE TABLE Emis
+ (
+Emi_Id NUMBER(5) CONSTRAINT Emis_EmiId_pk PRIMARY KEY ,
+Card_Number  NUMBER(16) ,
+Tenure NUMBER(2) CONSTRAINT Emis_EmiTenure_nn NOT NULL, 
+Emi NUMBER(9,2)  , 
+Card_Limit NUMBER(8) CONSTRAINT Emis_CardLimit_nn NOT NULL, 
+Valid_date DATE DEFAULT SYSDATE,
+Paid  VARCHAR(4) DEFAULT ‘No’,
+Product_Id NUMBER(5) CONSTRAINT Emis_ProductId_fk REFERENCES Prod(Product_Id),
+Consumer_Id NUMBER(5) CONSTRAINT Emis_ConsumerId_fk REFERENCES Consumers(Consumer_Id)
+);
+
+
+CREATE TABLE Transactions
+(
+Transaction_Id NUMBER(5) CONSTRAINT Transactions_TransactionId_pk PRIMARY KEY,
+Transaction_Date DATE DEFAULT SYSDATE,
+Transaction_Amount NUMBER(7) , 
+Card_Number  NUMBER(16) ,
+Product_Id NUMBER(5) CONSTRAINT Transactions_ProductId_fk REFERENCES Prod(Product_id),
+Consumer_Id NUMBER(5) CONSTRAINT Transactions_ConsumerId_fk REFERENCES Consumers(Consumer_Id)
+);
+
+
+
+
+ ---------------- SEQUENCE   Command ---------------
+Create sequence product_seq START WITH 34102 INCREMENT BY 1;
+Select product_seq.NEXTVAL FROM dual;
+Select product_seq.CURRVAL FROM dual;
+
+Create sequence consumer_seq START WITH 60101 INCREMENT BY 1;
+Select consumer_seq.NEXTVAL FROM dual;
+Select consumer_seq.CURRVAL FROM dual;
+
+Create sequence transaction_seq START WITH 11111 INCREMENT BY 1;
+Select transaction_seq.NEXTVAL FROM dual;
+Select transaction_seq.CURRVAL FROM dual;
+
+Create sequence emi_seq START WITH 42001 INCREMENT BY 1;
+Select emi_seq.NEXTVAL FROM dual;
+Select emi_seq.CURRVAL FROM dual;
+
+
+------------------ ER Relationship---------------------
+
+Login - Consumer 1:1
+Consumer - Product 1:m(Not reqd)
+Consumer - Transaction 1:m
+Consumer - EMI 1:m
+Product - Transaction 1:m
+Product - EMI 1:1
